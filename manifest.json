@@ -1,0 +1,46 @@
+{
+  "manifest_version": 3,
+  "name": "Weekly Report RO Kolkata",
+  "version": "1.0.4",
+  "description": "AI-powered QA defect validation and precision/recall audit portal for National Highways Authority of India (NHAI) survey logs.",
+  "permissions": [
+    "identity",
+    "storage",
+    "tabs",
+    "activeTab",
+    "declarativeNetRequest"
+  ],
+  "host_permissions": [
+    "https://sheets.googleapis.com/*",
+    "https://docs.googleapis.com/*",
+    "https://www.googleapis.com/*",
+    "http://*/*",
+    "https://*/*"
+  ],
+  "oauth2": {
+    "client_id": "734535863261-ps61qoriati1thlhvffadcuo3j35thsm.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/spreadsheets"
+    ]
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "sandbox": {
+    "pages": ["viewer_sandbox.html"]
+  },
+  "action": {
+    "default_title": "Weekly Report RO Kolkata",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon-16.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtGUHLe3h+o4YjDZEi9thI9K4y55DR+0cXcA/xe6rvsmovMV+iPMeyRRps/iU8YoR/1sfzZTpOvaCl1A+gKvBoWpYqSRW8Rf6NulxYQNWGdmV5JkSjNaV3h0eWSqTZWXAyVmYYjLxNXQ06oDV89ZuqkNzntlEVVgefBCGVu1XpxfeGTmwjgv7lD3KptMJOUgRMaMs/sM+czEFHjQi2Sui16JZC8JlZEs7HpT9BtFMnaEmAcvHIvLgA0lnzb8Tjf9vo1B0NiKrQKSUTHx/Ft/dxfnR27O8S1scgOPITkz6hqTrOC34SDV5B23GIWlx48dGPVn3SGgvF1xMZIhnaG4aUQIDAQAB"
+}

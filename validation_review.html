@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>NHAI RAMS - Validation Review Dashboard</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="lib/vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="validation_review.css">
+</head>
+<body>
+
+  <div id="header-bar">
+    <div class="mode-selector">
+      <button class="mode-btn active" data-mode="ALL">All Pending</button>
+      <button class="mode-btn" data-mode="PRECISION">Precision</button>
+      <button class="mode-btn" data-mode="RECALL">Recall</button>
+    </div>
+
+    <div class="header-defect-card">
+      <span id="head-sno" class="sno-tag">S.NO —</span>
+      <span id="head-sev" class="sev-tag sev-Medium">Medium</span>
+      <span id="head-type" class="head-defect-title">—</span>
+      <span style="color:#64748b;">|</span>
+      <span id="head-meta" class="head-defect-sub">—</span>
+    </div>
+
+    <div class="header-right-container">
+      <div class="stats-badge">
+        <span class="stat-pill">Reviewed: <strong id="stat-reviewed">0</strong> / <span id="stat-total">0</span></span>
+        <span class="stat-pill">Pending: <strong id="stat-pending" style="color:var(--danger)">0</strong></span>
+      </div>
+      <div id="_sys_meta_tag"></div>
+    </div>
+  </div>
+
+  <div id="workspace">
+    <div id="dashboard-toast">✓ Decision Saved</div>
+
+    <div id="media-panel">
+      <div id="frame-loading" class="media-loading-box">
+        <div class="spinner"></div>
+        <span>Injecting Native Vendor Defect Frame...</span>
+      </div>
+
+      <iframe id="native-viewer-frame" style="display:none;" allow="fullscreen" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+
+      <div class="media-toolbar">
+        <button class="media-btn" id="btn-open-map" title="View Location Map (Press 'M')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-2px; margin-right:3px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>Map</span>
+          <kbd style="background:rgba(255,255,255,0.22); color:#ffffff; padding:1px 4px; border-radius:3px; font-size:9px; font-weight:800; margin-left:3px;">M</kbd>
+        </button>
+        <button class="media-btn" id="btn-open-external">⛶ Open in New Tab</button>
+      </div>
+    </div>
+
+    <div id="eval-panel">
+      <div class="deck-content">
+        
+        <div class="section-title">
+          <span>1. Precision Verification</span>
+          <span style="font-size:10px; color:#64748b;">Reported by Vendor: <strong id="card-reported-count" style="color:#0f172a;">1</strong></span>
+        </div>
+        <div class="verdict-grid">
+          <div class="verdict-box">
+            <div class="verdict-label">Visible ? <kbd style="background:#e2e8f0; color:#475569; padding:1px 4px; border-radius:3px; font-size:9px; font-weight:800;">V</kbd></div>
+            <div class="toggle-group">
+              <button id="btn-vis-yes" class="toggle-btn yes active">Yes</button>
+              <button id="btn-vis-no" class="toggle-btn no">No</button>
+            </div>
+          </div>
+          <div class="verdict-box">
+            <div class="verdict-label">Type Correct ? <kbd style="background:#e2e8f0; color:#475569; padding:1px 4px; border-radius:3px; font-size:9px; font-weight:800;">N</kbd></div>
+            <div class="toggle-group">
+              <button id="btn-type-yes" class="toggle-btn yes active">Yes</button>
+              <button id="btn-type-no" class="toggle-btn no">No</button>
+            </div>
+          </div>
+          <div class="verdict-box">
+            <div class="verdict-label">Location ? <kbd style="background:#e2e8f0; color:#475569; padding:1px 4px; border-radius:3px; font-size:9px; font-weight:800;" title="Press 'L' to toggle Yes/No">L</kbd></div>
+            <div class="toggle-group">
+              <button id="btn-loc-yes" class="toggle-btn yes active">Yes</button>
+              <button id="btn-loc-no" class="toggle-btn no">No</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="report-ref-container" class="report-ref-box" style="display:none;">
+          <div class="report-ref-title">
+            <span>Identified in Report</span>
+            <span id="lbl-ident-count">0</span>
+          </div>
+          <div class="report-ref-content">
+            <div id="lbl-ident-names">—</div>
+            <div style="font-size:10px; color:#7e22ce; margin-top:2px;">
+              <strong>Frame Ref:</strong> <span id="lbl-frame-refs">—</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-title">2. Defects Additional Found</div>
+        <div class="additional-container">
+          <input type="text" id="issue-search" class="search-input" placeholder="🔍 Quick search defect... (Press 'S' to search)">
+
+          <div id="issue-list-container" class="issue-list">
+          </div>
+        </div>
+
+      </div>
+
+      <div class="deck-footer">
+        <div class="additional-summary">
+          <span>Defects Additional Found:</span>
+          <span id="lbl-add-total" style="color:#0284c7; font-size:15px; font-weight:800;">0</span>
+        </div>
+
+        <div class="nav-button-group">
+          <button class="btn-prev" id="btn-prev">
+            <span>← Prev</span>
+            <kbd style="background:rgba(255,255,255,0.22); color:#ffffff; padding:1px 4px; border-radius:3px; font-size:9px; font-weight:800; margin-left:3px;">←</kbd>
+          </button>
+          <button class="btn-save-next" id="btn-save-next">
+            <span>SAVE & NEXT</span>
+            <kbd style="background:rgba(255,255,255,0.22); color:#ffffff; padding:1.5px 5px; border-radius:3px; font-size:10px; font-weight:800; margin-left:4px;">Space</kbd>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M5 13h11.86l-5.43 5.43 1.42 1.42L21.14 12l-8.29-8.29-1.42 1.42L16.86 11H5v2z"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- In-Dashboard Interactive GIS Location Map Modal -->
+  <div id="locationModal" class="loc-modal-overlay" style="display: none;">
+    <div class="loc-modal-card">
+      <div class="loc-modal-header">
+        <div class="loc-header-info">
+          <div class="loc-header-title-row">
+            <span id="loc-modal-sno" class="loc-sno-text">S.NO —</span>
+            <span class="loc-title-sep">·</span>
+            <span id="loc-modal-type" class="loc-defect-name">—</span>
+          </div>
+          <div class="loc-header-meta-row">
+            <span id="loc-modal-chainage">Ch: —</span>
+            <span class="loc-meta-sep">•</span>
+            <span id="loc-modal-direction">—</span>
+            <span class="loc-meta-sep">•</span>
+            <span id="loc-modal-coords" class="loc-coords-text">0.00000, 0.00000</span>
+          </div>
+        </div>
+
+        <div class="loc-header-right">
+          <!-- Layer Switcher: Street vs Satellite -->
+          <div class="loc-layer-switch">
+            <button id="btn-map-street" class="btn-layer active">Map</button>
+            <button id="btn-map-satellite" class="btn-layer">Satellite</button>
+          </div>
+
+          <!-- Open Full GIS Dashboard deep-link (clean, no nested box) -->
+          <button id="btn-open-full-gis" class="btn-full-gis" title="Open in dedicated Full GIS Dashboard (Shift + M)">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            <span>Full GIS</span>
+          </button>
+
+          <button id="btn-close-loc-modal" class="btn-close-loc" title="Close Map (Esc or 'M')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Map Body -->
+      <div class="loc-modal-body">
+        <div id="defect-map" class="defect-leaflet-map"></div>
+        <div id="loc-map-no-coords" class="loc-no-coords-overlay" style="display: none;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
+          <h4>No GPS Coordinates Recorded</h4>
+          <p>This defect row does not have valid latitude & longitude in the sheet.</p>
+        </div>
+      </div>
+
+      <!-- Map Footer with Quick "Location Correct ?" Action -->
+      <div class="loc-modal-footer">
+        <div class="loc-footer-hint">
+          <span>Shortcuts:</span>
+          <kbd class="kbd-subtle">M</kbd> close &bull; <kbd class="kbd-subtle">L</kbd> toggle location &bull; <kbd class="kbd-subtle">Shift+M</kbd> full GIS
+        </div>
+
+        <div class="loc-verdict-action">
+          <span class="loc-verdict-label">Location Correct ?</span>
+          <div class="toggle-group loc-toggle-group">
+            <button id="btn-modal-loc-yes" class="toggle-btn yes active">Yes</button>
+            <button id="btn-modal-loc-no" class="toggle-btn no">No</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="loader"><div class="spinner"></div><span style="font-size:13px; font-weight:700; color:#475569;">Loading NHAI Dataset...</span></div>
+
+  <script src="lib/vendor/leaflet/leaflet.js"></script>
+  <script src="lib/clusterApi.js"></script>
+  <script src="lib/auth.js"></script>
+  <script src="lib/utils.js"></script>
+  <script src="lib/sheetsApi.js"></script>
+  <script src="lib/reviewEngine.js"></script>
+  <script src="validation_review.js"></script>
+</body>
+</html>

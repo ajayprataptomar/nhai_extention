@@ -1,0 +1,21 @@
+# OS & Temp files
+.DS_Store
+Thumbs.db
+*.log
+*.zip
+
+# Sensitive Backend Server Code (Hosted on Dedicated VPS Cluster)
+server/
+
+# Manuals and Docs
+*.md
+USER_MANUAL.*
+*.docx
+*.xlsx
+09_09_26-*.json
+screenshot*
+scratch/
+
+# Ignore loose pngs but keep extension icons
+*.png
+!icons/*.png

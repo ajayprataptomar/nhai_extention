@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Defect Frame Viewer Sandbox</title>
+  <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #000000;
+    }
+  </style>
+</head>
+<body>
+  <script>
+    window.addEventListener('message', (event) => {
+      if (event.data && event.data.type === 'RENDER_HTML' && event.data.html) {
+        document.open();
+        document.write(event.data.html);
+        document.close();
+      }
+    });
+    try {
+      window.parent.postMessage({ type: 'SANDBOX_READY' }, '*');
+    } catch (e) {}
+  </script>
+</body>
+</html>
